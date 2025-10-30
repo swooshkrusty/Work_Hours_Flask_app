@@ -13,19 +13,53 @@ TIME_RGX = re.compile(
 )
 
 MONTH_ALIASES = {
-    "1": 1, "01": 1, "jan": 1, "january": 1,
-    "2": 2, "02": 2, "feb": 2, "february": 2,
-    "3": 3, "03": 3, "mar": 3, "march": 3,
-    "4": 4, "04": 4, "apr": 4, "april": 4,
-    "5": 5, "05": 5, "may": 5,                 # (remove duplicate "may": 5)
-    "6": 6, "06": 6, "jun": 6, "june": 6,
-    "7": 7, "07": 7, "jul": 7, "july": 7,
-    "8": 8, "08": 8, "aug": 8, "august": 8,
-    "9": 9, "09": 9, "sep": 9, "sept": 9, "september": 9,
-    "10": 10, "oct": 10, "october": 10,
-    "11": 11, "nov": 11, "november": 11,
-    "12": 12, "dec": 12, "december": 12,
+    "1": 1,
+    "01": 1,
+    "jan": 1,
+    "january": 1,
+    "2": 2,
+    "02": 2,
+    "feb": 2,
+    "february": 2,
+    "3": 3,
+    "03": 3,
+    "mar": 3,
+    "march": 3,
+    "4": 4,
+    "04": 4,
+    "apr": 4,
+    "april": 4,
+    "5": 5,
+    "05": 5,
+    "may": 5,  # (remove duplicate "may": 5)
+    "6": 6,
+    "06": 6,
+    "jun": 6,
+    "june": 6,
+    "7": 7,
+    "07": 7,
+    "jul": 7,
+    "july": 7,
+    "8": 8,
+    "08": 8,
+    "aug": 8,
+    "august": 8,
+    "9": 9,
+    "09": 9,
+    "sep": 9,
+    "sept": 9,
+    "september": 9,
+    "10": 10,
+    "oct": 10,
+    "october": 10,
+    "11": 11,
+    "nov": 11,
+    "november": 11,
+    "12": 12,
+    "dec": 12,
+    "december": 12,
 }
+
 
 def parse_month(s: str) -> int:
     key = s.strip().lower()
@@ -33,12 +67,14 @@ def parse_month(s: str) -> int:
         raise ValueError(f"Unrecognized month: {s}")
     return MONTH_ALIASES[key]
 
+
 def to_24h(hour12: int, minute: int, ampm: str) -> tuple[int, int]:
     ampm = ampm.lower()
     h = hour12 % 12
     if ampm == "pm":
         h += 12
     return h, minute
+
 
 def parse_range(date_obj: datetime, rng: str) -> tuple[datetime, datetime, int, int]:
     m = TIME_RGX.match(rng)
@@ -58,13 +94,16 @@ def parse_range(date_obj: datetime, rng: str) -> tuple[datetime, datetime, int, 
     h, m = divmod(minutes_total, 60)
     return start, end, h, m
 
+
 def day_name(dt: datetime) -> str:
     return dt.strftime("%A")
+
 
 # ---------- ADD THIS: the form page ----------
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
 
 # ---------- Builder ----------
 @app.route("/build", methods=["GET", "POST"])
@@ -110,10 +149,13 @@ def build():
                     day = int(parts[0])
                     base_date = datetime(year, mon, day)
                 elif len(parts) == 2:
-                    m_in = int(parts[0]); day = int(parts[1])
+                    m_in = int(parts[0])
+                    day = int(parts[1])
                     base_date = datetime(year, m_in, day)
                 elif len(parts) == 3:
-                    m_in = int(parts[0]); day = int(parts[1]); y_in = int(parts[2])
+                    m_in = int(parts[0])
+                    day = int(parts[1])
+                    y_in = int(parts[2])
                     base_date = datetime(y_in, m_in, day)
                 else:
                     continue
@@ -126,14 +168,16 @@ def build():
             continue
 
         total_minutes += hh * 60 + mm
-        rows.append({
-            "date": base_date.strftime("%m/%d/%Y"),
-            "day": day_name(base_date),
-            # use %I (01-12) then strip leading 0 for cross-platform portability
-            "time_label": f"{start.strftime('%I:%M %p').lstrip('0').lower()} – {end.strftime('%I:%M %p').lstrip('0').lower()}",
-            "h": hh,
-            "m": f"{mm:02d}",
-        })
+        rows.append(
+            {
+                "date": base_date.strftime("%m/%d/%Y"),
+                "day": day_name(base_date),
+                # use %I (01-12) then strip leading 0 for cross-platform portability
+                "time_label": f"{start.strftime('%I:%M %p').lstrip('0').lower()} – {end.strftime('%I:%M %p').lstrip('0').lower()}",
+                "h": hh,
+                "m": f"{mm:02d}",
+            }
+        )
 
     # сортировка
     rows.sort(key=lambda r: datetime.strptime(r["date"], "%m/%d/%Y"))
@@ -157,22 +201,19 @@ def build():
         "month_name": month_name,
         "year": year,
         "rows": rows,
-
         # Subtotal (раздельные суммы)
         "subtotal_h": subtotal_h,
         "subtotal_m": subtotal_m,
         "subtotal_m_as_h": m_to_h,  # сколько часов в сумме минут
-        "subtotal_m_rem": m_rem,     # остаток минут после конвертации
-
+        "subtotal_m_rem": m_rem,  # остаток минут после конвертации
         # Total (после конвертации)
         "total_h": total_h,
         "total_m": f"{total_m:02d}",
-
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
     }
 
-    return render_template(
-        "result.html", **context)
+    return render_template("result.html", **context)
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

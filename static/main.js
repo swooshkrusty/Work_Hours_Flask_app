@@ -1,118 +1,113 @@
-const tbody = document.getElementById('tbody');
-document.getElementById('addRow').addEventListener('click', () => addRow());
-
-document.addEventListener("DOMContentLoaded", () => {
-  const monthInput = document.getElementById("monthInput");
-  const currentMonthName = new Date().toLocaleString("en-US", { month: "long" });
-  if (!monthInput.value) {
-    monthInput.value = currentMonthName; // Пример: November
-  }
+// ===== result.html: Print =====
+document.addEventListener('DOMContentLoaded', () => {
+  const printBtn = document.getElementById('printBtn');
+  if (!printBtn) return;
+  printBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.activeElement?.blur?.();
+    setTimeout(() => window.print(), 50);
+  });
 });
 
-function opt(val, text){ 
-  const o = document.createElement('option'); 
-  o.value = val; 
-  o.textContent = text ?? val; 
-  return o; 
-}
+// ===== index.html: form =====
+document.addEventListener('DOMContentLoaded', () => {
+  const tbody = document.getElementById('tbody');
+  const addRowBtn = document.getElementById('addRow');
+  const monthInput = document.getElementById('monthInput');
+  const yearInput = document.getElementById('year');
 
-function makeSelectHour(){ 
-  const s = document.createElement('select'); 
-  for(let h = 1; h <= 12; h++) s.appendChild(opt(h)); 
-  return s; 
-}
+  if (!tbody || !addRowBtn) return;
 
-function makeSelectMinute(step = 1){
-  const s = document.createElement('select');
-  for(let m = 0; m < 60; m += step) 
-    s.appendChild(opt(m.toString().padStart(2,'0')));
-  return s;
-}
-
-function makeSelectAmPm(){ 
-  const s = document.createElement('select'); 
-  s.appendChild(opt('am','AM')); 
-  s.appendChild(opt('pm','PM')); 
-  return s; 
-}
-
-function fmt(h, m, ap){ 
-  return `${h}:${m} ${ap}`; 
-}
-
-function addRow(){
-  const tr = document.createElement('tr');
-
-  // 📅 Date picker
-  const tdDate = document.createElement('td');
-  const dateInput = document.createElement('input');
-  dateInput.name = 'date[]';
-  dateInput.type = 'date';
-  dateInput.required = true;
-  dateInput.className = 'date-input';
-  tdDate.appendChild(dateInput);
-
-  // Start shift pickers
-  const tdStart = document.createElement('td');
-  const sHour = makeSelectHour(), sMin = makeSelectMinute(), sAP = makeSelectAmPm();
-  const startWrap = document.createElement('div'); 
-  startWrap.className = 'pickers';
-  startWrap.append(sHour, sMin, sAP); 
-  tdStart.appendChild(startWrap);
-
-  // End shift pickers
-  const tdEnd = document.createElement('td');
-  const eHour = makeSelectHour(), eMin = makeSelectMinute(), eAP = makeSelectAmPm();
-  const endWrap = document.createElement('div'); 
-  endWrap.className = 'pickers';
-  endWrap.append(eHour, eMin, eAP); 
-  tdEnd.appendChild(endWrap);
-
-  // Preview + hidden range
-  const tdPreview = document.createElement('td');
-  const preview = document.createElement('div'); 
-  preview.className = 'range-preview';
-  const hiddenRange = document.createElement('input'); 
-  hiddenRange.type = 'hidden'; 
-  hiddenRange.name = 'range[]';
-  tdPreview.append(preview, hiddenRange);
-
-  // Remove button
-  const tdDel = document.createElement('td'); 
-  tdDel.className = 'noprint';
-  const delBtn = document.createElement('button'); 
-  delBtn.type = 'button'; 
-  delBtn.className = 'btn danger'; 
-  delBtn.textContent = '×';
-  delBtn.onclick = () => tr.remove();
-  tdDel.appendChild(delBtn);
-
-  function update(){
-    const startLabel = fmt(sHour.value, sMin.value, sAP.value);
-    const endLabel = fmt(eHour.value, eMin.value, eAP.value);
-    preview.textContent = `${startLabel} – ${endLabel}`;
-    hiddenRange.value = `${startLabel} - ${endLabel}`; // for backend
+  // Месяц по умолчанию = текущий
+  if (monthInput && !monthInput.value) {
+    monthInput.value = new Date().toLocaleString('en-US', { month: 'long' });
   }
 
-  [sHour,sMin,sAP,eHour,eMin,eAP].forEach(el => el.addEventListener('change', update));
-  update();
+  // Вспомогалки
+  const pad = (n) => String(n).padStart(2, '0');
+  const toAmPm = (hhmm) => {
+    // hhmm = "23:05" -> "11:05 pm"
+    const [h, m] = hhmm.split(':').map(Number);
+    const ap = h >= 12 ? 'pm' : 'am';
+    const h12 = ((h + 11) % 12) + 1;
+    return `${h12}:${pad(m)} ${ap}`;
+  };
 
-  tr.append(tdDate, tdStart, tdEnd, tdPreview, tdDel);
-  tbody.appendChild(tr);
-}
+  // Попытка открыть системный пикер программно
+  const openPicker = (input) => {
+    if (typeof input.showPicker === 'function') input.showPicker();
+    else input.focus();
+  };
 
-// Add one default row
-addRow();
+  function addRow() {
+    const tr = document.createElement('tr');
 
-// Optional: when Month or Year changes, set the month/year on empty date fields
-['monthInput', 'year'].forEach(id => {
-  const el = document.getElementById(id) || document.querySelector(`input[name="${id}"]`);
-  if (!el) return;
-  el.addEventListener('change', () => {
-    const y = currentYear();
-    const m = selectedMonth();
-    [...tbody.querySelectorAll('input[type="date"]')].forEach(inp => {
-      if (!inp.value) inp.value = yyyyMmDd(y, m, 1);
-    });
-  });
+    // Date cell
+    const tdDate = document.createElement('td');
+    const dateWrap = document.createElement('div'); dateWrap.className = 'picker-wrap';
+    const dateInput = document.createElement('input');
+    dateInput.name = 'date[]';
+    dateInput.type = 'date';
+    dateInput.required = true;
+    dateInput.className = 'date-input';
+    const dateBtn = document.createElement('button');
+    dateBtn.type = 'button'; dateBtn.className = 'picker-btn'; dateBtn.textContent = '📅';
+    dateBtn.addEventListener('click', () => openPicker(dateInput));
+    dateWrap.append(dateInput, dateBtn);
+    tdDate.appendChild(dateWrap);
+
+    // Start time
+    const tdStart = document.createElement('td');
+    const startWrap = document.createElement('div'); startWrap.className = 'picker-wrap';
+    const startInput = document.createElement('input');
+    startInput.type = 'time'; startInput.step = '60'; // минутные шаги
+    startInput.required = true; startInput.className = 'time-input start';
+    const startBtn = document.createElement('button');
+    startBtn.type = 'button'; startBtn.className = 'picker-btn'; startBtn.textContent = '🕒';
+    startBtn.addEventListener('click', () => openPicker(startInput));
+    startWrap.append(startInput, startBtn);
+    tdStart.appendChild(startWrap);
+
+    // End time
+    const tdEnd = document.createElement('td');
+    const endWrap = document.createElement('div'); endWrap.className = 'picker-wrap';
+    const endInput = document.createElement('input');
+    endInput.type = 'time'; endInput.step = '60';
+    endInput.required = true; endInput.className = 'time-input end';
+    const endBtn = document.createElement('button');
+    endBtn.type = 'button'; endBtn.className = 'picker-btn'; endBtn.textContent = '🕒';
+    endBtn.addEventListener('click', () => openPicker(endInput));
+    endWrap.append(endInput, endBtn);
+    tdEnd.appendChild(endWrap);
+
+    // Preview + hidden range
+    const tdPreview = document.createElement('td');
+    const preview = document.createElement('div'); preview.className = 'range-preview';
+    const hiddenRange = document.createElement('input'); hiddenRange.type = 'hidden'; hiddenRange.name = 'range[]';
+    tdPreview.append(preview, hiddenRange);
+
+    // Remove
+    const tdDel = document.createElement('td'); tdDel.className = 'noprint';
+    const delBtn = document.createElement('button'); delBtn.type = 'button'; delBtn.className = 'btn danger'; delBtn.textContent = '×';
+    delBtn.addEventListener('click', () => tr.remove());
+    tdDel.appendChild(delBtn);
+
+    function update() {
+      const s = startInput.value; // "HH:MM" или ""
+      const e = endInput.value;
+      const sLabel = s ? toAmPm(s) : '—';
+      const eLabel = e ? toAmPm(e) : '—';
+      preview.textContent = (s && e) ? `${sLabel} – ${eLabel}` : '';
+      hiddenRange.value   = (s && e) ? `${sLabel} - ${eLabel}` : '';
+    }
+    startInput.addEventListener('change', update);
+    endInput.addEventListener('change', update);
+    update();
+
+    tr.append(tdDate, tdStart, tdEnd, tdPreview, tdDel);
+    tbody.appendChild(tr);
+  }
+
+  addRowBtn.addEventListener('click', addRow);
+  addRow(); // первая строка
 });

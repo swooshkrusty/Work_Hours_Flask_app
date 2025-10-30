@@ -50,7 +50,8 @@
 
 <div class="actions noprint">
   <a class="btn" href="{{ url_for('index') }}">&larr; Back</a>
-  <button class="btn" onclick="window.print()">Print / Save PDF</button>
+  <button id="printBtn" class="btn">Print / Save PDF</button>
 </div>
+<script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </body>
 </html>

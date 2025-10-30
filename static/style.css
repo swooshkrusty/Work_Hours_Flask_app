@@ -194,3 +194,18 @@ body.condensed .report .col-time {
   width: 250px;
   font-size: 11.5px;
 }
+
+/* Поля-пикеры */
+.picker-wrap{
+  display:flex; gap:8px; align-items:center;
+}
+.date-input, .time-input{
+  padding:8px 10px; border:1px solid var(--grid); border-radius:8px;
+  font:inherit; background:#fff; min-width:160px;
+}
+.time-input{ min-width:140px; }
+.picker-btn{
+  border:1px solid var(--grid); background:#f5f5f5;
+  padding:8px 10px; border-radius:8px; cursor:pointer;
+}
+.picker-btn:active{ transform:translateY(1px); }
