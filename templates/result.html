@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>{{ title }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h1>{{ title }}</h1>
+<p class="muted">Generated: {{ generated_at }}</p>
+
+<table class="report">
+  <thead>
+    <tr>
+      <th class="col-date">Date</th>
+      <th class="col-day">Day</th>
+      <th class="col-time">Time Worked</th>
+      <th class="col-hours num">Hours</th>
+      <th class="col-min num">Minutes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td class="col-date">{{ r.date }}</td>
+      <td class="col-day">{{ r.day }}</td>
+      <td class="col-time"><span class="time">{{ r.time_label }}</span></td>
+      <td class="col-hours num">{{ r.h }}</td>
+      <td class="col-min num">{{ r.m }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+
+  <tfoot>
+    <tr class="subtotal">
+      <td colspan="3" class="label">Subtotal</td>
+      <td class="num"><strong>{{ subtotal_h }} h</strong></td>
+      <td class="num">
+        <strong>{{ subtotal_m }} min = {{ subtotal_m_as_h }} h {{ "%02d"|format(subtotal_m_rem) }} min</strong>
+      </td>
+    </tr>
+    <tr class="total">
+      <td colspan="3" class="label">Total</td>
+      <td class="num"><strong>{{ total_h }} h {{ total_m }} min</strong></td>
+      <td></td>
+    </tr>
+  </tfoot>
+</table>
+
+<div class="actions noprint">
+  <a class="btn" href="{{ url_for('index') }}">&larr; Back</a>
+  <button class="btn" onclick="window.print()">Print / Save PDF</button>
+</div>
+</body>
+</html>

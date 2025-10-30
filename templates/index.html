@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Work Hours — Input</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      /* Небольшой апгрейд стилей для пикеров */
+      .pickers {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .pickers select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding: 8px 10px;
+        border: 1px solid var(--grid);
+        border-radius: 8px;
+        background: #fff;
+        font: inherit;
+        min-width: 72px;
+        text-align-last: center;
+      }
+      .pickers .sep {
+        opacity: 0.6;
+      }
+      .range-preview {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+      input.date-input {
+        width: 160px;
+      }
+      @media (max-width: 560px) {
+        .pickers select {
+          min-width: 64px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Work Hours — Input</h1>
+
+    <form method="post" action="{{ url_for('build') }}" id="form">
+      <div class="grid">
+        <label
+          >Last Name
+          <input name="last_name" type="text" placeholder="Doe" required />
+        </label>
+        <label
+          >First Name
+          <input name="first_name" type="text" placeholder="John" required />
+        </label>
+        <label
+          >Month (name or number)
+          <input
+            name="month"
+            type="text"
+            id="monthInput"
+            placeholder="October or 10"
+            required
+          />
+        </label>
+        <label
+          >Year
+          <input name="year" type="number" value="2025" required />
+        </label>
+      </div>
+
+      <h2>Rows</h2>
+      <p class="muted">
+        Tap the calendar 📅 to pick a date, or type manually. On iPhone — it
+        opens as a scroll wheel.
+      </p>
+
+      <table id="rows">
+        <thead>
+          <tr>
+            <th style="width: 180px">Date</th>
+            <th>Start Shift</th>
+            <th>End Shift</th>
+            <th style="width: 320px">Time Worked (preview)</th>
+            <th style="width: 80px" class="noprint">Remove</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+
+      <div class="actions">
+        <button type="button" class="btn" id="addRow">+ Add day</button>
+        <button type="submit" class="btn primary">Create report</button>
+      </div>
+    </form>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </body>
+</html>
