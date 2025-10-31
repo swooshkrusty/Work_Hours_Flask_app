@@ -51,6 +51,14 @@
 <div class="actions noprint">
   <a class="btn" href="{{ url_for('index') }}">&larr; Back</a>
   <button id="printBtn" class="btn">Print / Save PDF</button>
+  <div id="iabNotice" class="iab-notice noprint" hidden>
+  Printing isn’t available inside Telegram. 
+  Tap <strong>Open in Browser</strong> and then print.
+  <div class="iab-actions">
+    <a id="openInBrowser" class="btn" href="#" rel="external">Open in Browser</a>
+    <button id="copyLink" class="btn" type="button">Copy link</button>
+  </div>
+</div>
 </div>
 <script src="{{ url_for('static', filename='main.js') }}?v=8" defer></script>
 </body>

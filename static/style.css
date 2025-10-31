@@ -1,217 +1,115 @@
-:root {
-  --fg:#111;
-  --bg:#fff;
-  --grid:#dcdcdc;
-  --muted:#666;
-  --accent:#0a7;
-}
+:root{ --fg:#111; --bg:#fff; --grid:#dcdcdc; --muted:#666; --accent:#0a7; }
+*{ box-sizing:border-box }
 
-* { box-sizing:border-box }
-
-body {
+body{
   font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  color:var(--fg);
-  background:var(--bg);
-  margin:24px;
+  color:var(--fg); background:var(--bg); margin:24px;
 }
 
-h1 { font-size:24px; margin:0 0 12px }
-h2 { margin:18px 0 8px }
-.muted { color:var(--muted); font-size:13px }
+h1{ font-size:24px; margin:0 0 12px }
+h2{ margin:18px 0 8px }
+.muted{ color:var(--muted); font-size:13px }
 
-.grid {
-  display:grid;
-  gap:12px;
-  grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
-  margin:10px 0 14px;
-}
+/* ===== Form grid & inputs ===== */
+.grid{ display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); margin:10px 0 14px }
+label{ display:flex; flex-direction:column; gap:6px; font-weight:600 }
+input[type="text"],input[type="number"]{ padding:8px 10px; border:1px solid var(--grid); border-radius:8px; font:inherit }
 
-label {
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  font-weight:600;
-}
+/* ===== Table ===== */
+table{ width:100%; border-collapse:collapse; margin-top:10px }
+th,td{ border:1px solid var(--grid); padding:8px 10px; text-align:left }
+th{ background:#f3f3f3 }
+.num{ text-align:right }
 
-input[type="text"], input[type="number"] {
-  padding:8px 10px;
-  border:1px solid var(--grid);
-  border-radius:8px;
-  font:inherit;
-}
+/* ===== Actions / Buttons ===== */
+.actions{ display:flex; gap:10px; margin-top:12px }
+.btn{ border:1px solid var(--grid); background:#f5f5f5; padding:8px 12px; border-radius:10px; cursor:pointer; text-decoration:none; color:inherit }
+.btn.primary{ background:var(--accent); color:#fff; border-color:var(--accent) }
+.btn.danger{ border-color:#caa; background:#f7eaea }
 
-table {
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-}
+/* ===== Report table (result.html) ===== */
+.report{ width:100%; max-width:980px; margin:8px auto 24px; border-collapse:collapse; table-layout:fixed; font-size:14px }
+.report th,.report td{ border:1px solid #e5e7eb; padding:10px 12px; vertical-align:top }
+.report thead th{ background:#f8fafc; font-weight:700 }
+.report .num{ text-align:right; font-variant-numeric:tabular-nums }
 
-th, td {
-  border:1px solid var(--grid);
-  padding:8px 10px;
-  text-align:left;
-}
+/* ширины колонок: Time на одну строку */
+.report .col-date{ width:120px }
+.report .col-day{ width:120px }
+.report .col-time{ width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.report .col-hours{ width:100px }
+.report .col-min{ width:140px }
+.report .col-time .time{ display:inline-block; font-variant-numeric:tabular-nums; letter-spacing:.1px }
 
-th { background:#f3f3f3 }
-.num { text-align:right }
-
-.actions {
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-
-.btn {
-  border:1px solid var(--grid);
-  background:#f5f5f5;
-  padding:8px 12px;
-  border-radius:10px;
-  cursor:pointer;
-  text-decoration:none;
-  color:inherit;
-}
-
-.btn.primary {
-  background:var(--accent);
-  color:#fff;
-  border-color:var(--accent);
-}
-
-.btn.danger {
-  border-color:#caa;
-  background:#f7eaea;
-}
-
-.noprint {}
-
-@media print {
-  body { margin:0.5in }
-  .noprint{ display:none }
-}
-
-/* ===== Report Table ===== */
-.report {
-  width: 100%;
-  max-width: 980px;
-  margin: 8px auto 24px;
-  border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 14px;
-}
-
-.report th, .report td {
-  border: 1px solid #e5e7eb;
-  padding: 10px 12px;
-  vertical-align: top;
-}
-
-.report thead th {
-  background: #f8fafc;
-  font-weight: 700;
-}
-
-.report .num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Колонки: подгоняем ширину, чтобы Time помещалось в одну строку */
-.report .col-date  { width: 120px; }
-.report .col-day   { width: 120px; }
-.report .col-time  { width: 300px; white-space: nowrap; overflow:hidden; text-overflow:ellipsis; }
-.report .col-hours { width: 100px; }
-.report .col-min   { width: 140px; }
-
-.report .col-time .time {
-  display: inline-block;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: .1px;
-}
-
-/* Подсветка итогов */
 .report tfoot .subtotal .label,
-.report tfoot .total .label { font-weight: 700; }
+.report tfoot .total .label{ font-weight:700 }
+.report tfoot .subtotal td{ background:#fcfcfc }
+.report tfoot .total td{ background:#f3f4f6 }
 
-.report tfoot .subtotal td { background: #fcfcfc; }
-.report tfoot .total td { background: #f3f4f6; }
-
-
-@media (max-width: 880px){
-  .report { font-size: 13px; }
-  .report .col-time { width: 260px; }
+@media (max-width:880px){
+  .report{ font-size:13px }
+  .report .col-time{ width:260px }
+}
+@media (max-width:760px){
+  .report{ font-size:12.5px }
+  .report .col-time{ width:220px }
 }
 
-@media (max-width: 760px){
-  .report { font-size: 12.5px; }
-  .report .col-time { width: 220px; }
+/* ===== Print ===== */
+@media print{
+  @page{ size:Letter; margin:14mm 14mm 16mm }
+  html,body{ background:#fff!important; color:#111 }
+  .noprint{ display:none!important }
+  .report{ max-width:none; font-size:12.5px }
+  .report th,.report td{ padding:8px 10px; border-color:#d1d5db }
+  .report .col-time{ width:280px; font-size:12.5px }
+  .report .col-hours{ width:90px }
+  .report .col-min{ width:130px }
+  thead{ display:table-header-group } tfoot{ display:table-row-group } tr{ page-break-inside:avoid }
+  h1{ margin-bottom:8px } p.muted{ margin-top:0 }
 }
 
-/* ===== Print Styles ===== */
-@media print {
-  @page {
-    size: Letter;                   
-    margin: 14mm 14mm 16mm 14mm;
-  }
+/* ===== Optional condensed mode ===== */
+body.condensed .report{ font-size:11.5px }
+body.condensed .report th, body.condensed .report td{ padding:6px 8px }
+body.condensed .report .col-time{ width:250px; font-size:11.5px }
 
-  html, body {
-    background: #fff !important;
-    color: #111;
-  }
+/* ===== Pickers (index.html) ===== */
+.picker-wrap{ display:flex; align-items:center; gap:6px; position:relative }
 
-  .noprint { display: none !important; }
+/* Скрыть системные иконки календаря/часов внутри input */
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator{ opacity:0; pointer-events:none }
 
-  .report {
-    max-width: none;
-    font-size: 12.5px;          
-  }
-
-  .report th, .report td {
-    padding: 8px 10px;
-    border-color: #d1d5db;
-  }
-
-  .report .col-time  { width: 280px; font-size: 12.5px; }
-  .report .col-hours { width: 90px; }
-  .report .col-min   { width: 130px; }
-
-  thead { display: table-header-group; }
-  tfoot { display: table-row-group; }
-  tr { page-break-inside: avoid; }
-
-  h1 { margin-bottom: 8px; }
-  p.muted { margin-top: 0; }
+/* Поля */
+input.date-input, input.time-input{
+  font:inherit; border:1px solid var(--grid); border-radius:8px;
+  padding:8px 10px; text-align:center; background:#fff; width:130px;
 }
+.time-input{ width:130px }
 
-/* ===== Опциональный «компактный режим» для длинных отчётов ===== */
-body.condensed .report {
-  font-size: 11.5px;
-}
-body.condensed .report th,
-body.condensed .report td {
-  padding: 6px 8px;
-}
-body.condensed .report .col-time {
-  width: 250px;
-  font-size: 11.5px;
-}
-
-/* Поля-пикеры */
-.picker-wrap{
-  display:flex; gap:8px; align-items:center;
-}
-.date-input, .time-input{
-  padding:8px 10px; border:1px solid var(--grid); border-radius:8px;
-  font:inherit; background:#fff; min-width:160px;
-}
-.time-input{ min-width:140px; }
+/* Кнопки 📅/🕒 */
 .picker-btn{
-  border:1px solid var(--grid); background:#f5f5f5;
-  padding:8px 10px; border-radius:8px; cursor:pointer;
+  background:#f5f5f5; border:1px solid var(--grid); border-radius:8px;
+  padding:8px 10px; cursor:pointer; font-size:16px;
+  transition:transform .15s ease, background-color .15s ease;
 }
-.picker-btn:active{ transform:translateY(1px); }
+.picker-btn:hover{ background:#e9e9e9; transform:scale(1.05) }
+.picker-btn:active{ transform:translateY(1px) }
 
-.scale-up-right{ animation: scale-up-right 0.8s both; }
+/* Анимация появления строки */
+.scale-up-right{ animation:scale-up-right .5s ease both }
 @keyframes scale-up-right{
-  0%   { transform: scale(.5); transform-origin: right center; opacity:.0; }
-  100% { transform: scale(1);  transform-origin: right center; opacity:1;  }
+  0%{ transform:scale(.8); transform-origin:right center; opacity:0 }
+  100%{ transform:scale(1); transform-origin:right center; opacity:1 }
+}
+
+/* Подсказка про In-App Browser */
+.iab-notice{ margin-top:12px; padding:12px; border:1px dashed #d1d5db; border-radius:10px; background:#fff7ed; color:#7c2d12 }
+.iab-actions{ display:flex; gap:8px; margin-top:8px }
+
+/* Мобилка */
+@media (max-width:600px){
+  input.date-input, input.time-input{ width:110px }
+  .picker-btn{ padding:6px 8px; font-size:15px }
 }
