@@ -1,115 +1,195 @@
-:root{ --fg:#111; --bg:#fff; --grid:#dcdcdc; --muted:#666; --accent:#0a7; }
-*{ box-sizing:border-box }
-
-body{
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  color:var(--fg); background:var(--bg); margin:24px;
+:root {
+  --fg: #3b2f2f;           /* тёплый коричневый текст */
+  --bg: #f8f5f1;           /* мягкий бежевый фон */
+  --grid: #d8cfc4;         /* светло-коричневая сетка */
+  --muted: #7a6e63;        /* приглушённый текст */
+  --accent: #b58b4c;       /* акцент — золотисто-коричневый */
 }
 
-h1{ font-size:24px; margin:0 0 12px }
-h2{ margin:18px 0 8px }
-.muted{ color:var(--muted); font-size:13px }
+* { box-sizing: border-box; }
+
+body {
+  font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  margin: 24px;
+}
+
+/* Заголовки */
+h1 { font-size: 24px; margin: 0 0 12px; color: var(--fg); }
+h2 { margin: 18px 0 8px; color: var(--fg); }
+.muted { color: var(--muted); font-size: 13px; }
 
 /* ===== Form grid & inputs ===== */
-.grid{ display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); margin:10px 0 14px }
-label{ display:flex; flex-direction:column; gap:6px; font-weight:600 }
-input[type="text"],input[type="number"]{ padding:8px 10px; border:1px solid var(--grid); border-radius:8px; font:inherit }
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin: 10px 0 14px;
+}
+label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
+input[type="text"], input[type="number"] {
+  padding: 8px 10px;
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  font: inherit;
+  background-color: #fffdf9;
+  color: var(--fg);
+}
 
 /* ===== Table ===== */
-table{ width:100%; border-collapse:collapse; margin-top:10px }
-th,td{ border:1px solid var(--grid); padding:8px 10px; text-align:left }
-th{ background:#f3f3f3 }
-.num{ text-align:right }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td {
+  border: 1px solid var(--grid);
+  padding: 8px 10px;
+  text-align: left;
+}
+th { background: #efe6da; color: var(--fg); font-weight: 600; }
+.num { text-align: right; }
 
 /* ===== Actions / Buttons ===== */
-.actions{ display:flex; gap:10px; margin-top:12px }
-.btn{ border:1px solid var(--grid); background:#f5f5f5; padding:8px 12px; border-radius:10px; cursor:pointer; text-decoration:none; color:inherit }
-.btn.primary{ background:var(--accent); color:#fff; border-color:var(--accent) }
-.btn.danger{ border-color:#caa; background:#f7eaea }
+.actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.btn {
+  border: 1px solid var(--grid);
+  background: #f5eee4;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--fg);
+  font-weight: 500;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
+}
+.btn:hover {
+  background: #e0cfae;
+  transform: translateY(-1px);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Основная кнопка (Create Report) */
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: #a17c3c;
+}
+.btn.primary:hover { background: #9b7535; }
+.btn.primary:active { background: #8b682e; }
+
+/* Красная (удалить) */
+/* .btn.danger {
+  background: #e6b8a2;
+  border-color: #d8a58e;
+  color: #5a2a21;
+}
+
+.btn.danger:hover { background: #d69a82; } */
+
+.btn.danger {
+  background:#e2725b;          /* тёплый терракотовый */
+  border-color:#e2725b;
+  color:#fff;
+}
+.btn.danger:hover { background:#c55a47; }
 
 /* ===== Report table (result.html) ===== */
-.report{ width:100%; max-width:980px; margin:8px auto 24px; border-collapse:collapse; table-layout:fixed; font-size:14px }
-.report th,.report td{ border:1px solid #e5e7eb; padding:10px 12px; vertical-align:top }
-.report thead th{ background:#f8fafc; font-weight:700 }
-.report .num{ text-align:right; font-variant-numeric:tabular-nums }
-
-/* ширины колонок: Time на одну строку */
-.report .col-date{ width:120px }
-.report .col-day{ width:120px }
-.report .col-time{ width:300px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
-.report .col-hours{ width:100px }
-.report .col-min{ width:140px }
-.report .col-time .time{ display:inline-block; font-variant-numeric:tabular-nums; letter-spacing:.1px }
-
-.report tfoot .subtotal .label,
-.report tfoot .total .label{ font-weight:700 }
-.report tfoot .subtotal td{ background:#fcfcfc }
-.report tfoot .total td{ background:#f3f4f6 }
-
-@media (max-width:880px){
-  .report{ font-size:13px }
-  .report .col-time{ width:260px }
+.report {
+  width: 100%;
+  max-width: 980px;
+  margin: 8px auto 24px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 14px;
+  background: #fffdf9;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border-radius: 8px;
 }
-@media (max-width:760px){
-  .report{ font-size:12.5px }
-  .report .col-time{ width:220px }
+.report th, .report td {
+  border: 1px solid #d8cfc4;
+  padding: 10px 12px;
+  vertical-align: top;
 }
-
-/* ===== Print ===== */
-@media print{
-  @page{ size:Letter; margin:14mm 14mm 16mm }
-  html,body{ background:#fff!important; color:#111 }
-  .noprint{ display:none!important }
-  .report{ max-width:none; font-size:12.5px }
-  .report th,.report td{ padding:8px 10px; border-color:#d1d5db }
-  .report .col-time{ width:280px; font-size:12.5px }
-  .report .col-hours{ width:90px }
-  .report .col-min{ width:130px }
-  thead{ display:table-header-group } tfoot{ display:table-row-group } tr{ page-break-inside:avoid }
-  h1{ margin-bottom:8px } p.muted{ margin-top:0 }
+.report thead th {
+  background: #f1e8db;
+  font-weight: 700;
+  color: var(--fg);
 }
-
-/* ===== Optional condensed mode ===== */
-body.condensed .report{ font-size:11.5px }
-body.condensed .report th, body.condensed .report td{ padding:6px 8px }
-body.condensed .report .col-time{ width:250px; font-size:11.5px }
-
-/* ===== Pickers (index.html) ===== */
-.picker-wrap{ display:flex; align-items:center; gap:6px; position:relative }
-
-/* Скрыть системные иконки календаря/часов внутри input */
-input[type="time"]::-webkit-calendar-picker-indicator,
-input[type="date"]::-webkit-calendar-picker-indicator{ opacity:0; pointer-events:none }
-
-/* Поля */
-input.date-input, input.time-input{
-  font:inherit; border:1px solid var(--grid); border-radius:8px;
-  padding:8px 10px; text-align:center; background:#fff; width:130px;
+.report .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-.time-input{ width:130px }
+.report .col-date { width: 120px; }
+.report .col-day { width: 120px; }
+.report .col-time { width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.report .col-hours { width: 100px; }
+.report .col-min { width: 140px; }
+.report tfoot .subtotal td { background: #faf3ea; }
+.report tfoot .total td { background: #f0e2ce; font-weight: 700; }
 
-/* Кнопки 📅/🕒 */
-.picker-btn{
-  background:#f5f5f5; border:1px solid var(--grid); border-radius:8px;
-  padding:8px 10px; cursor:pointer; font-size:16px;
-  transition:transform .15s ease, background-color .15s ease;
+/* ===== Pickers ===== */
+.picker-wrap { display: flex; align-items: center; gap: 6px; position: relative; }
+input.date-input, input.time-input {
+  font: inherit;
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: center;
+  background: #fffdf9;
+  color: var(--fg);
+  width: 130px;
 }
-.picker-btn:hover{ background:#e9e9e9; transform:scale(1.05) }
-.picker-btn:active{ transform:translateY(1px) }
+.picker-btn {
+  background: #f2e8db;
+  border: 1px solid var(--grid);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.picker-btn:hover { background: #e4d2b6; transform: scale(1.05); }
+.picker-btn:active { transform: translateY(1px); }
 
-/* Анимация появления строки */
-.scale-up-right{ animation:scale-up-right .5s ease both }
-@keyframes scale-up-right{
-  0%{ transform:scale(.8); transform-origin:right center; opacity:0 }
-  100%{ transform:scale(1); transform-origin:right center; opacity:1 }
+/* ===== Print-friendly ===== */
+@media print {
+  @page { size: Letter; margin: 14mm 14mm 16mm; }
+  html, body { background: #fff !important; color: #111; }
+  .noprint { display: none !important; }
+  .report { font-size: 12.5px; }
+  .report th, .report td { border-color: #d1c7bb; }
 }
 
-/* Подсказка про In-App Browser */
-.iab-notice{ margin-top:12px; padding:12px; border:1px dashed #d1d5db; border-radius:10px; background:#fff7ed; color:#7c2d12 }
-.iab-actions{ display:flex; gap:8px; margin-top:8px }
+/* ===== Hover animation for buttons ===== */
+.btn:hover { box-shadow: 0 2px 6px rgba(165, 126, 62, 0.25); }
 
-/* Мобилка */
-@media (max-width:600px){
-  input.date-input, input.time-input{ width:110px }
-  .picker-btn{ padding:6px 8px; font-size:15px }
+/* ===== Smooth appearance ===== */
+.scale-up-right { animation: scale-up-right 0.5s ease both; }
+@keyframes scale-up-right {
+  0% { transform: scale(0.85); transform-origin: right center; opacity: 0; }
+  100% { transform: scale(1); transform-origin: right center; opacity: 1; }
 }
+
+.dst-note {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  color: #7a5900;
+  font-size: 14px;
+}
+
+/* ===== Modal ===== */
+.modal-root[hidden] { display:none; }
+.modal-root { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; }
+.modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(120%) blur(2px); }
+.modal-card {
+  position:relative; width:min(92vw, 420px); background:#fff; border:1px solid #e5e7eb;
+  border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,.18); padding:18px;
+  animation:modal-pop .16s ease-out;
+}
+@keyframes modal-pop { from { transform:scale(.96); opacity:.6 } to { transform:scale(1); opacity:1 } }
+.modal-title { margin:0 0 8px; font-size:18px }
+.modal-message { margin:0 0 14px; color:#444; line-height:1.4 }
+.modal-actions { display:flex; justify-content:flex-end; gap:10px }

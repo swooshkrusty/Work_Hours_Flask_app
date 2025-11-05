@@ -4,30 +4,45 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Work Hours — Input</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
   </head>
   <body>
     <h1>Work Hours — Input</h1>
 
     <form method="post" action="{{ url_for('build') }}" id="form">
+      <input type="hidden" name="tz" id="tz">
       <div class="grid">
-        <label>Last Name
+        <label
+          >Last Name
           <input name="last_name" type="text" placeholder="Doe" required />
         </label>
-        <label>First Name
+        <label
+          >First Name
           <input name="first_name" type="text" placeholder="John" required />
         </label>
-        <label>Month (name or number)
-          <input name="month" id="monthInput" type="text" placeholder="October or 10" required />
-        </label>
-        <label>Year
+        <!-- <label
+          >Month (name or number)
+          <input
+            name="month"
+            id="monthInput"
+            type="text"
+            placeholder="October or 10"
+            required
+          />
+        </label> -->
+        <label
+          >Year
           <input name="year" id="year" type="number" value="2025" required />
         </label>
       </div>
 
       <h2>Rows</h2>
       <p class="muted">
-        Tap the calendar 📅 to pick a date, or type manually. On iPhone it opens as a scroll wheel.
+        Tap the calendar 📅 to pick a date, or type manually. On iPhone it opens
+        as a scroll wheel.
       </p>
 
       <table id="rows" class="report">
@@ -37,7 +52,7 @@
             <th class="col-day">Start Shift</th>
             <th class="col-day">End Shift</th>
             <th class="col-time">Time Worked (preview)</th>
-            <th style="width:80px" class="noprint">Remove</th>
+            <th style="width: 80px" class="noprint">Remove</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -46,9 +61,22 @@
       <div class="actions">
         <button type="button" class="btn" id="addRow">+ Add day</button>
         <button type="submit" class="btn primary">Create report</button>
+        <button type="button" class="btn danger" id="clearAll">🧹 Clear all</button>
       </div>
     </form>
 
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+    <!-- Modal root -->
+<div id="modalRoot" class="modal-root" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle" class="modal-title">Confirm action</h3>
+    <p id="modalMessage" class="modal-message">Are you sure?</p>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="modalCancel">Cancel</button>
+      <button type="button" class="btn danger" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
   </body>
 </html>
