@@ -37,7 +37,7 @@ input[type="text"], input[type="number"] {
   color: var(--fg);
 }
 
-/* ===== Table ===== */
+/* ===== Table (общие стили) ===== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -110,13 +110,13 @@ th { background: #efe6da; color: var(--fg); font-weight: 600; }
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-.report .col-date { width: 120px; }
-.report .col-day { width: 120px; }
-.report .col-time { width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.report .col-date  { width: 120px; }
+.report .col-day   { width: 120px; }
+.report .col-time  { width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .report .col-hours { width: 100px; }
-.report .col-min { width: 140px; }
+.report .col-min   { width: 140px; }
 .report tfoot .subtotal td { background: #faf3ea; }
-.report tfoot .total td { background: #f0e2ce; font-weight: 700; }
+.report tfoot .total td    { background: #f0e2ce; font-weight: 700; }
 
 /* ===== Pickers ===== */
 .picker-wrap {
@@ -205,6 +205,7 @@ input.time-input {
 
 /* ===== Mobile adjustments ===== */
 @media (max-width: 768px) {
+  /* пикеры поменьше */
   .picker-wrap input[type="date"],
   .picker-wrap input[type="time"],
   input.date-input,
@@ -217,5 +218,29 @@ input.time-input {
     height: 26px;
     font-size: 14px;
   }
-  table.report { font-size: 0.9rem; }
+
+  /* таблица не сжимается — уходит в горизонтальный скролл */
+  .report {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;     /* не даём заголовкам ломаться в столбик */
+    font-size: 0.9rem;
+  }
+  .report thead, .report tbody, .report tfoot { display: table; width: 100%; table-layout: fixed; }
+
+  th, td { white-space: nowrap; padding: 8px 10px; }
+
+  /* колонке с временем даём мин. ширину, чтобы текст читался */
+  .report .col-time { min-width: 180px; white-space: nowrap; }
+
+  /* можно подсказать пользователю про скролл — при желании убрать */
+  .report::before {
+    content: "↔️  Scroll to view all columns";
+    display: block;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 4px 0 6px;
+  }
 }
