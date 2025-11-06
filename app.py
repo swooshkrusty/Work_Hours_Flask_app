@@ -3,8 +3,11 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import os
 import re
+import io
+import fitz  # PyMuPDF
 from datetime import datetime, timedelta, date
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -64,6 +67,138 @@ def make_period_title(dates: list[date]) -> str:
         return f"{_fmt_month_day(lo)} – {_fmt_month_day(hi)}, {lo.year}"
     return f"{_fmt_month_day(lo)}, {lo.year} – {_fmt_month_day(hi)}, {hi.year}"
 
+def _make_context_from_draft(draft: dict) -> dict:
+    """Собираем context так же, как в /build, из приходящего draft"""
+    last_name  = (draft.get("last_name") or "").strip()
+    first_name = (draft.get("first_name") or "").strip()
+    year       = int(draft.get("year") or 0)
+    tz_name    = (draft.get("tz") or "").strip() or os.environ.get("DEFAULT_TZ", "America/Chicago")
+    try:
+        tz = ZoneInfo(tz_name)
+    except ZoneInfoNotFoundError:
+        tz = ZoneInfo("America/Chicago")
+
+    rows_src = draft.get("rows") or []
+    rows = []
+    for row in rows_src:
+        d_str = (row.get("date") or "").strip()
+        s_str = (row.get("start") or "").strip()
+        e_str = (row.get("end") or "").strip()
+        if not (d_str and s_str and e_str):
+            continue
+        # формируем скрытое поле range в точности как на форме
+        rng = f"{_to_ampm(s_str)} - {_to_ampm(e_str)}"
+        if not re.match(r"^\d{4}-\d{2}-\d{2}$", d_str):
+            continue
+        base_date = datetime.strptime(d_str, "%Y-%m-%d")
+        try:
+            start, end, hh, mm, dst_adjusted = parse_range(base_date, rng, tz)
+        except ValueError:
+            continue
+        rows.append({
+            "date": base_date.strftime("%m/%d/%Y"),
+            "day":  day_name(base_date),
+            "time_label": f"{start.strftime('%I:%M %p').lstrip('0').lower()} – {end.strftime('%I:%M %p').lstrip('0').lower()}",
+            "h": hh,
+            "m": f"{mm:02d}",
+            "dst": dst_adjusted,
+        })
+
+    rows.sort(key=lambda r: datetime.strptime(r["date"], "%m/%d/%Y"))
+    dates_for_title = [datetime.strptime(r["date"], "%m/%d/%Y").date() for r in rows]
+    if dates_for_title:
+        period_title = make_period_title(dates_for_title)
+        title_str = f"{first_name} {last_name} — Work Hours ({period_title})"
+    else:
+        title_str = f"{first_name} {last_name} — Work Hours ({year})"
+
+    subtotal_h = sum(r["h"] for r in rows)
+    subtotal_m = sum(int(r["m"]) for r in rows)
+    m_to_h, m_rem = divmod(subtotal_m, 60)
+    total_h = subtotal_h + m_to_h
+    total_m = m_rem
+    dst_note = any(r["dst"] for r in rows)
+
+    return {
+        "title": title_str,
+        "last_name": last_name,
+        "first_name": first_name,
+        "year": year,
+        "rows": rows,
+        "subtotal_h": subtotal_h,
+        "subtotal_m": subtotal_m,
+        "subtotal_m_as_h": m_to_h,
+        "subtotal_m_rem": m_rem,
+        "total_h": total_h,
+        "total_m": f"{total_m:02d}",
+        "dst_note": dst_note,
+        "tz_name": tz_name,
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+    }
+
+def _to_ampm(hhmm: str) -> str:
+    h, m = map(int, hhmm.split(":"))
+    ap = "pm" if h >= 12 else "am"
+    h12 = ((h + 11) % 12) + 1
+    return f"{h12}:{str(m).zfill(2)} {ap}"
+
+@app.route("/export-image", methods=["POST"])
+def export_image():
+    html = request.form.get("html")
+    if not html:
+        return jsonify({"error": "missing_html"}), 400
+
+    # Вставим <base>, чтобы относительные url (CSS/картинки) работали
+    base = request.url_root
+    html_with_base = html.replace("<head>", f"<head><base href='{base}'>", 1)
+
+    pdf_bytes = None
+    weasy_err = None
+
+    # 1) Пытаемся WeasyPrint
+    try:
+        from weasyprint import HTML
+        pdf_bytes = HTML(string=html_with_base).write_pdf()
+    except Exception as e:
+        weasy_err = str(e)
+
+    # 2) Фолбэк на Playwright, если WeasyPrint не сработал
+    if pdf_bytes is None:
+        try:
+            from playwright.sync_api import sync_playwright
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                page = browser.new_page()
+                page.set_content(html_with_base, wait_until="load")
+                pdf_bytes = page.pdf(
+                    format="Letter",
+                    print_background=True,
+                    prefer_css_page_size=True
+                )
+                browser.close()
+        except Exception as e:
+            return jsonify({
+                "error": "render_failed",
+                "weasyprint": weasy_err,
+                "playwright": str(e)
+            }), 500
+
+    # 3) PDF -> PNG через PyMuPDF
+    try:
+        import fitz  # PyMuPDF
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        page = doc[0]
+        pix = page.get_pixmap(dpi=200)  # можно 300 для еще резче
+        img_bytes = pix.tobytes("png")
+    except Exception as e:
+        return jsonify({"error": "pdf_to_png_failed", "detail": str(e)}), 500
+
+    return send_file(
+        io.BytesIO(img_bytes),
+        mimetype="image/png",
+        as_attachment=True,
+        download_name="work-hours.png",
+    )
 
 # ---------- form ----------
 @app.route("/", methods=["GET"])
@@ -160,9 +295,18 @@ def build():
     return render_template("result.html", **context)
 
 
+
+
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 5000))
+#     app.run(host="0.0.0.0", port=port)
+
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-
-
+    import webbrowser
+    port = 5000
+    try:
+        webbrowser.open(f"http://127.0.0.1:{port}")
+    except Exception:
+        pass
+    app.run(host="127.0.0.1", port=port, debug=True)

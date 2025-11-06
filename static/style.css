@@ -38,7 +38,11 @@ input[type="text"], input[type="number"] {
 }
 
 /* ===== Table ===== */
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
 th, td {
   border: 1px solid var(--grid);
   padding: 8px 10px;
@@ -60,15 +64,10 @@ th { background: #efe6da; color: var(--fg); font-weight: 600; }
   font-weight: 500;
   transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
 }
-.btn:hover {
-  background: #e0cfae;
-  transform: translateY(-1px);
-}
-.btn:active {
-  transform: scale(0.97);
-}
+.btn:hover { background: #e0cfae; transform: translateY(-1px); }
+.btn:active { transform: scale(0.97); }
 
-/* Основная кнопка (Create Report) */
+/* Основная кнопка */
 .btn.primary {
   background: var(--accent);
   color: #fff;
@@ -78,16 +77,8 @@ th { background: #efe6da; color: var(--fg); font-weight: 600; }
 .btn.primary:active { background: #8b682e; }
 
 /* Красная (удалить) */
-/* .btn.danger {
-  background: #e6b8a2;
-  border-color: #d8a58e;
-  color: #5a2a21;
-}
-
-.btn.danger:hover { background: #d69a82; } */
-
 .btn.danger {
-  background:#e2725b;          /* тёплый терракотовый */
+  background:#e2725b;
   border-color:#e2725b;
   color:#fff;
 }
@@ -128,28 +119,45 @@ th { background: #efe6da; color: var(--fg); font-weight: 600; }
 .report tfoot .total td { background: #f0e2ce; font-weight: 700; }
 
 /* ===== Pickers ===== */
-.picker-wrap { display: flex; align-items: center; gap: 6px; position: relative; }
-input.date-input, input.time-input {
-  font: inherit;
-  border: 1px solid var(--grid);
-  border-radius: 8px;
+.picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.picker-wrap input[type="date"],
+.picker-wrap input[type="time"],
+input.date-input,
+input.time-input {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 120px;
   padding: 8px 10px;
   text-align: center;
   background: #fffdf9;
   color: var(--fg);
-  width: 130px;
-}
-.picker-btn {
-  background: #f2e8db;
   border: 1px solid var(--grid);
   border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
+  box-sizing: border-box;
+}
+.picker-btn {
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
   font-size: 16px;
+  line-height: 1;
+  border: 1px solid var(--grid);
+  background: #f2e8db;
+  border-radius: 8px;
+  cursor: pointer;
   transition: background-color 0.2s ease, transform 0.15s ease;
 }
 .picker-btn:hover { background: #e4d2b6; transform: scale(1.05); }
 .picker-btn:active { transform: translateY(1px); }
+
+/* ===== Убираем наложение иконок в таблице ввода ===== */
+#rows.report { table-layout: auto; }
+.report .col-time { white-space: normal; word-break: break-word; }
 
 /* ===== Print-friendly ===== */
 @media print {
@@ -170,6 +178,7 @@ input.date-input, input.time-input {
   100% { transform: scale(1); transform-origin: right center; opacity: 1; }
 }
 
+/* ===== DST note ===== */
 .dst-note {
   margin-top: 18px;
   padding: 12px 14px;
@@ -193,3 +202,20 @@ input.date-input, input.time-input {
 .modal-title { margin:0 0 8px; font-size:18px }
 .modal-message { margin:0 0 14px; color:#444; line-height:1.4 }
 .modal-actions { display:flex; justify-content:flex-end; gap:10px }
+
+/* ===== Mobile adjustments ===== */
+@media (max-width: 768px) {
+  .picker-wrap input[type="date"],
+  .picker-wrap input[type="time"],
+  input.date-input,
+  input.time-input {
+    min-width: 96px;
+  }
+  .picker-btn {
+    flex-basis: 26px;
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+  }
+  table.report { font-size: 0.9rem; }
+}
