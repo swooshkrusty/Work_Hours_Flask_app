@@ -342,3 +342,55 @@ if (clearBtn) {
   // раскомментируй следующую строку:
   // form.addEventListener('submit', () => localStorage.removeItem(STORAGE_KEY));
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btnPdf = document.getElementById('savePdfBtn');
+  const btnJpg = document.getElementById('saveJpgBtn');
+
+  async function exportFile(fmt) {
+    const btn = fmt === 'pdf' ? btnPdf : btnJpg;
+    if (!btn) return;
+
+    // лёгкий индикатор
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Preparing...';
+
+    try {
+      // Берём весь HTML текущей страницы. Можно ограничить область, если есть контейнер.
+      const html = document.documentElement.outerHTML;
+
+      const res = await fetch('/export', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({ html, format: fmt })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+
+      // Скачиваем файл (на iPhone для JPG будет «Сохранить изображение» → Photos)
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fmt === 'pdf' ? 'work-hours.pdf' : 'work-hours.jpg';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+      alert('Export failed: ' + (e.message || e));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = orig;
+    }
+  }
+
+  btnPdf?.addEventListener('click', (e) => { e.preventDefault(); exportFile('pdf'); });
+  btnJpg?.addEventListener('click', (e) => { e.preventDefault(); exportFile('jpg'); });
+});

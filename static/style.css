@@ -1,221 +1,189 @@
-:root {
-  --fg: #3b2f2f;           /* тёплый коричневый текст */
-  --bg: #f8f5f1;           /* мягкий бежевый фон */
-  --grid: #d8cfc4;         /* светло-коричневая сетка */
-  --muted: #7a6e63;        /* приглушённый текст */
-  --accent: #b58b4c;       /* акцент — золотисто-коричневый */
+:root{
+  --fg:#3b2f2f; --bg:#f8f5f1; --grid:#d8cfc4; --muted:#7a6e63; --accent:#b58b4c;
 }
 
-* { box-sizing: border-box; }
+*{box-sizing:border-box}
 
-body {
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--fg);
-  background: var(--bg);
-  margin: 24px;
+body{
+  font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--fg); background:var(--bg); margin:24px;
 }
 
-/* Заголовки */
-h1 { font-size: 24px; margin: 0 0 12px; color: var(--fg); }
-h2 { margin: 18px 0 8px; color: var(--fg); }
-.muted { color: var(--muted); font-size: 13px; }
+/* Headings */
+h1{font-size:24px;margin:0 0 12px;color:var(--fg)}
+h2{margin:18px 0 8px;color:var(--fg)}
+.muted{color:var(--muted);font-size:13px}
 
 /* ===== Form grid & inputs ===== */
-.grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  margin: 10px 0 14px;
+.grid{
+  display:grid; gap:12px;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  margin:10px 0 14px;
 }
-label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
-input[type="text"], input[type="number"] {
-  padding: 8px 10px;
-  border: 1px solid var(--grid);
-  border-radius: 8px;
-  font: inherit;
-  background-color: #fffdf9;
-  color: var(--fg);
+label{display:flex;flex-direction:column;gap:6px;font-weight:600}
+input[type="text"],input[type="number"]{
+  padding:8px 10px;border:1px solid var(--grid);border-radius:8px;
+  font:inherit;background:#fffdf9;color:var(--fg);
 }
 
-/* ===== Table ===== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-th, td {
-  border: 1px solid var(--grid);
-  padding: 8px 10px;
-  text-align: left;
-}
-th { background: #efe6da; color: var(--fg); font-weight: 600; }
-.num { text-align: right; }
+/* ===== Base table ===== */
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid var(--grid);padding:8px 10px;text-align:left}
+th{background:#efe6da;color:var(--fg);font-weight:600}
+.num{text-align:right}
 
 /* ===== Actions / Buttons ===== */
-.actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
-.btn {
-  border: 1px solid var(--grid);
-  background: #f5eee4;
-  padding: 8px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  text-decoration: none;
-  color: var(--fg);
-  font-weight: 500;
-  transition: background-color 0.25s ease, color 0.25s ease, transform 0.15s ease;
+.actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.btn{
+  border:1px solid var(--grid);background:#f5eee4;padding:8px 14px;border-radius:10px;
+  cursor:pointer;text-decoration:none;color:var(--fg);font-weight:500;
+  transition:background-color .25s,color .25s,transform .15s;
 }
-.btn:hover { background: #e0cfae; transform: translateY(-1px); }
-.btn:active { transform: scale(0.97); }
+.btn:hover{background:#e0cfae;transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:#fff;border-color:#a17c3c}
+.btn.primary:hover{background:#9b7535}
+.btn.primary:active{background:#8b682e}
+.btn.danger{background:#e2725b;border-color:#e2725b;color:#fff}
+.btn.danger:hover{background:#c55a47}
 
-/* Основная кнопка */
-.btn.primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: #a17c3c;
+/* ===== Report (result.html) ===== */
+.table-wrap{
+  width:100%;overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  border-radius:8px;background:transparent;
 }
-.btn.primary:hover { background: #9b7535; }
-.btn.primary:active { background: #8b682e; }
 
-/* Красная (удалить) */
-.btn.danger {
-  background:#e2725b;
-  border-color:#e2725b;
-  color:#fff;
+.report{
+  width:100%;max-width:980px;margin:8px auto 24px;
+  border-collapse:collapse;table-layout:fixed;
+  font-size:14px;background:#fffdf9;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);border-radius:8px;
+  min-width:760px; /* включает горизонтальный скролл при нехватке места */
 }
-.btn.danger:hover { background:#c55a47; }
+.report thead th{background:#f1e8db;font-weight:700;color:var(--fg);white-space:nowrap}
+.report th,.report td{border:1px solid #d8cfc4;padding:10px 12px;vertical-align:top}
+.report .num{ text-align:right; font-variant-numeric:tabular-nums; }
 
-/* ===== Report table (result.html) ===== */
-.report {
-  width: 100%;
-  max-width: 980px;
-  margin: 8px auto 24px;
-  border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 14px;
-  background: #fffdf9;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  border-radius: 8px;
-}
-.report th, .report td {
-  border: 1px solid #d8cfc4;
-  padding: 10px 12px;
-  vertical-align: top;
-}
-.report thead th {
-  background: #f1e8db;
-  font-weight: 700;
-  color: var(--fg);
-}
-.report .num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.report .col-date { width: 120px; }
-.report .col-day { width: 120px; }
-.report .col-time { width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.report .col-hours { width: 100px; }
-.report .col-min { width: 140px; }
-.report tfoot .subtotal td { background: #faf3ea; }
-.report tfoot .total td { background: #f0e2ce; font-weight: 700; }
+/* фиксированные/минимальные ширины */
+.report .col-date{min-width:140px}
+.report .col-day{min-width:140px}
+.report .col-time{min-width:240px;white-space:normal;word-break:break-word}
+.report .col-hours{min-width:80px}
+.report .col-min{min-width:80px}
+.report tfoot .subtotal td{background:#faf3ea}
+.report tfoot .total td{background:#f0e2ce;font-weight:700}
 
-/* ===== Pickers ===== */
-.picker-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
+/* ===== Inputs in table (pickers) ===== */
+.picker-wrap{display:flex;align-items:center;gap:6px;min-width:0}
 .picker-wrap input[type="date"],
 .picker-wrap input[type="time"],
-input.date-input,
-input.time-input {
-  flex: 1 1 auto;
-  width: auto;
-  min-width: 120px;
-  padding: 8px 10px;
-  text-align: center;
-  background: #fffdf9;
-  color: var(--fg);
-  border: 1px solid var(--grid);
-  border-radius: 8px;
-  box-sizing: border-box;
+input.date-input,input.time-input{
+  flex:1 1 auto;min-width:120px;width:auto;
+  padding:8px 10px;text-align:center;background:#fffdf9;color:var(--fg);
+  border:1px solid var(--grid);border-radius:8px;box-sizing:border-box;
 }
-.picker-btn {
-  flex: 0 0 28px;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  line-height: 1;
-  border: 1px solid var(--grid);
-  background: #f2e8db;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+.picker-btn{
+  flex:0 0 28px;width:28px;height:28px;font-size:16px;line-height:1;
+  border:1px solid var(--grid);background:#f2e8db;border-radius:8px;cursor:pointer;
+  transition:background-color .2s,transform .15s;
 }
-.picker-btn:hover { background: #e4d2b6; transform: scale(1.05); }
-.picker-btn:active { transform: translateY(1px); }
-
-/* ===== Убираем наложение иконок в таблице ввода ===== */
-#rows.report { table-layout: auto; }
-.report .col-time { white-space: normal; word-break: break-word; }
+.picker-btn:hover{background:#e4d2b6;transform:scale(1.05)}
+.picker-btn:active{transform:translateY(1px)}
 
 /* ===== Print-friendly ===== */
-@media print {
-  @page { size: Letter; margin: 14mm 14mm 16mm; }
-  html, body { background: #fff !important; color: #111; }
-  .noprint { display: none !important; }
-  .report { font-size: 12.5px; }
-  .report th, .report td { border-color: #d1c7bb; }
+@media print{
+  @page{size:Letter;margin:14mm 14mm 16mm}
+  html,body{background:#fff!important;color:#111}
+  .noprint{display:none!important}
+  .report{font-size:12.5px}
+  .report th,.report td{border-color:#d1c7bb}
 }
 
-/* ===== Hover animation for buttons ===== */
-.btn:hover { box-shadow: 0 2px 6px rgba(165, 126, 62, 0.25); }
+/* ===== Hover shadow ===== */
+.btn:hover{box-shadow:0 2px 6px rgba(165,126,62,.25)}
 
-/* ===== Smooth appearance ===== */
-.scale-up-right { animation: scale-up-right 0.5s ease both; }
-@keyframes scale-up-right {
-  0% { transform: scale(0.85); transform-origin: right center; opacity: 0; }
-  100% { transform: scale(1); transform-origin: right center; opacity: 1; }
+/* ===== Animations ===== */
+.scale-up-right{animation:scale-up-right .5s ease both}
+@keyframes scale-up-right{
+  0%{transform:scale(.85);transform-origin:right center;opacity:0}
+  100%{transform:scale(1);transform-origin:right center;opacity:1}
 }
 
 /* ===== DST note ===== */
-.dst-note {
-  margin-top: 18px;
-  padding: 12px 14px;
-  background: #fff8e1;
-  border: 1px solid #ffe082;
-  border-radius: 10px;
-  color: #7a5900;
-  font-size: 14px;
+.dst-note{
+  margin-top:18px;padding:12px 14px;background:#fff8e1;border:1px solid #ffe082;
+  border-radius:10px;color:#7a5900;font-size:14px;
 }
 
 /* ===== Modal ===== */
-.modal-root[hidden] { display:none; }
-.modal-root { position:fixed; inset:0; z-index:1000; display:grid; place-items:center; }
-.modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,.35); backdrop-filter:saturate(120%) blur(2px); }
-.modal-card {
-  position:relative; width:min(92vw, 420px); background:#fff; border:1px solid #e5e7eb;
-  border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,.18); padding:18px;
-  animation:modal-pop .16s ease-out;
+.modal-root[hidden]{display:none}
+.modal-root{position:fixed;inset:0;z-index:1000;display:grid;place-items:center}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.35);backdrop-filter:saturate(120%) blur(2px)}
+.modal-card{
+  position:relative;width:min(92vw,420px);background:#fff;border:1px solid #e5e7eb;
+  border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:18px;animation:modal-pop .16s ease-out;
 }
-@keyframes modal-pop { from { transform:scale(.96); opacity:.6 } to { transform:scale(1); opacity:1 } }
-.modal-title { margin:0 0 8px; font-size:18px }
-.modal-message { margin:0 0 14px; color:#444; line-height:1.4 }
-.modal-actions { display:flex; justify-content:flex-end; gap:10px }
+@keyframes modal-pop{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}
+.modal-title{margin:0 0 8px;font-size:18px}
+.modal-message{margin:0 0 14px;color:#444;line-height:1.4}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px}
 
-/* ===== Mobile adjustments ===== */
-@media (max-width: 768px) {
+/* ===== Mobile tweaks ===== */
+@media (max-width:768px){
+  .report{min-width:700px;font-size:.9rem}
+  .report thead th{font-size:12px}
   .picker-wrap input[type="date"],
-  .picker-wrap input[type="time"],
-  input.date-input,
-  input.time-input {
-    min-width: 96px;
+  .picker-wrap input[type="time"]{min-width:100px}
+  .picker-btn{width:26px;height:26px;font-size:14px}
+}
+
+/* ==== PRINT OVERRIDES FOR PDF (WeasyPrint/Playwright) ==== */
+@media print {
+  @page {
+    /* A4 можно: size: A4 portrait; */
+    size: Letter;
+    margin: 12mm 14mm 16mm; /* поля страницы */
   }
-  .picker-btn {
-    flex-basis: 26px;
-    width: 26px;
-    height: 26px;
-    font-size: 14px;
+
+  /* Таблица должна растягиваться на всю ширину листа */
+  .report {
+    width: 100%;
+    max-width: none;   /* убираем 980px */
+    min-width: 0;      /* убираем 760px */
+    table-layout: auto;/* пусть браузер сам распределит колонки */
+    font-size: 12.5px; /* кегль в PDF */
+    box-shadow: none;  /* тени в PDF не нужны */
+    border-radius: 0;
+    margin: 6px 0 14px;
   }
-  table.report { font-size: 0.9rem; }
+
+  /* Плотнее ячейки, чтобы больше помещалось */
+  .report th,
+  .report td {
+    padding: 8px 10px;
+    border-color: #d1c7bb;
+  }
+
+  /* Управление шириной колонок (подгони под себя) */
+  .report .col-date  {width: 90px; 
+                      min-width: 70px;
+                      max-width: 200px;}
+  .report .col-day   {width: 90px;
+                      min-width: 70px;
+                      max-width: 200px;}
+  .report .col-time  {width: 120px;
+                      min-width: 100px;
+                      max-width: 200px;
+                      white-space: normal;
+                      word-break: break-word;
+                      text-align: left;}
+  .report .col-hours { width: 90px;  text-align: right; }
+  .report .col-min   { width: 130px;  text-align: right; }
+
+  /* Не разрывать строку с итогами */
+  .report tfoot tr,
+  .report tfoot td {
+    page-break-inside: avoid;
+  }
 }

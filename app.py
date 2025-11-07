@@ -185,7 +185,7 @@ def export_image():
 
     # 3) PDF -> PNG через PyMuPDF
     try:
-        import fitz  # PyMuPDF
+        
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         page = doc[0]
         pix = page.get_pixmap(dpi=200)  # можно 300 для еще резче
@@ -195,9 +195,78 @@ def export_image():
 
     return send_file(
         io.BytesIO(img_bytes),
-        mimetype="image/png",
+        mimetype="image/jpg",
         as_attachment=True,
-        download_name="work-hours.png",
+        download_name="work-hours.jpg",
+    )
+# ---------- export (PDF / JPG) ----------
+@app.route("/export", methods=["POST"])
+def export():
+    html = request.form.get("html")
+    fmt  = (request.form.get("format") or "pdf").lower()  # "pdf" | "jpg"
+
+    if not html:
+        return jsonify({"error": "missing_html"}), 400
+
+    # чтобы относительные ссылки на CSS/картинки работали
+    base = request.url_root
+    html_with_base = html.replace("<head>", f"<head><base href='{base}'>", 1)
+
+    pdf_bytes = None
+    weasy_err = None
+
+    # 1) Пытаемся через WeasyPrint (если установлены зависимости)
+    try:
+        from weasyprint import HTML
+        pdf_bytes = HTML(string=html_with_base).write_pdf()
+    except Exception as e:
+        weasy_err = str(e)
+
+    # 2) Фолбэк: Playwright, если WeasyPrint недоступен
+    if pdf_bytes is None:
+        try:
+            from playwright.sync_api import sync_playwright
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                page = browser.new_page()
+                page.set_content(html_with_base, wait_until="load")
+                pdf_bytes = page.pdf(
+                    format="Letter",
+                    print_background=True,
+                    prefer_css_page_size=True,
+                )
+                browser.close()
+        except Exception as e:
+            return jsonify({
+                "error": "render_failed",
+                "weasyprint": weasy_err,
+                "playwright": str(e),
+            }), 500
+
+    # 3) Возвращаем в нужном формате
+    if fmt == "jpg":
+        try:
+            import fitz  # PyMuPDF
+            doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+            page = doc[0]
+            pix = page.get_pixmap(dpi=200)  # 300 для ещё резче
+            img_bytes = pix.tobytes("jpeg")  # именно JPEG
+        except Exception as e:
+            return jsonify({"error": "pdf_to_jpg_failed", "detail": str(e)}), 500
+
+        return send_file(
+            io.BytesIO(img_bytes),
+            mimetype="image/jpeg",
+            as_attachment=True,
+            download_name="work-hours.jpg",
+        )
+
+    # по умолчанию — PDF
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="work-hours.pdf",
     )
 
 # ---------- form ----------
@@ -297,8 +366,16 @@ def build():
 
 
 
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 5000))
+#     app.run(host="0.0.0.0", port=port)
+
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-
-
+    import webbrowser
+    port = 5000
+    try:
+        webbrowser.open(f"http://127.0.0.1:{port}")
+    except Exception:
+        pass
+    app.run(host="127.0.0.1", port=port, debug=True)
