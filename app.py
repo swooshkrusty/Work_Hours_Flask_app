@@ -246,7 +246,7 @@ def export():
     # 3) Возвращаем в нужном формате
     if fmt == "jpg":
         try:
-            import fitz  # PyMuPDF
+            
             doc = fitz.open(stream=pdf_bytes, filetype="pdf")
             page = doc[0]
             pix = page.get_pixmap(dpi=200)  # 300 для ещё резче

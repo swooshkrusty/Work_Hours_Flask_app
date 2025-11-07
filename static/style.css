@@ -68,7 +68,7 @@ th{background:#efe6da;color:var(--fg);font-weight:600}
 /* фиксированные/минимальные ширины */
 .report .col-date{min-width:140px}
 .report .col-day{min-width:140px}
-.report .col-time{min-width:240px;white-space:normal;word-break:break-word}
+.report .col-time{min-width:240px;white-space:normal; overflow-wrap: anywhere;}
 .report .col-hours{min-width:80px}
 .report .col-min{min-width:80px}
 .report tfoot .subtotal td{background:#faf3ea}
@@ -91,14 +91,6 @@ input.date-input,input.time-input{
 .picker-btn:hover{background:#e4d2b6;transform:scale(1.05)}
 .picker-btn:active{transform:translateY(1px)}
 
-/* ===== Print-friendly ===== */
-@media print{
-  @page{size:Letter;margin:14mm 14mm 16mm}
-  html,body{background:#fff!important;color:#111}
-  .noprint{display:none!important}
-  .report{font-size:12.5px}
-  .report th,.report td{border-color:#d1c7bb}
-}
 
 /* ===== Hover shadow ===== */
 .btn:hover{box-shadow:0 2px 6px rgba(165,126,62,.25)}
@@ -136,54 +128,64 @@ input.date-input,input.time-input{
   .picker-wrap input[type="date"],
   .picker-wrap input[type="time"]{min-width:100px}
   .picker-btn{width:26px;height:26px;font-size:14px}
+  .report .col-time {
+    min-width: 180px;
+    max-width: 260px;
+    white-space: nowrap;
+    
+  }
+  
+
 }
 
-/* ==== PRINT OVERRIDES FOR PDF (WeasyPrint/Playwright) ==== */
+/* ==== PRINT ONLY ==== */
 @media print {
   @page {
-    /* A4 можно: size: A4 portrait; */
     size: Letter;
-    margin: 12mm 14mm 16mm; /* поля страницы */
+    margin: 12mm 14mm 16mm; /* выбери один набор отступов */
   }
 
-  /* Таблица должна растягиваться на всю ширину листа */
+  html, body { background:#fff !important; color:#111; }
+
+  /* Прятать всё «служебное» */
+  .noprint,
+  .actions,
+  .btn,
+  #backBtn, #editBtn, #printBtn, #saveToPhotos {
+    display: none !important;
+  }
+
+  /* Таблица во всю ширину страницы */
   .report {
     width: 100%;
-    max-width: none;   /* убираем 980px */
-    min-width: 0;      /* убираем 760px */
-    table-layout: auto;/* пусть браузер сам распределит колонки */
-    font-size: 12.5px; /* кегль в PDF */
-    box-shadow: none;  /* тени в PDF не нужны */
+    max-width: none;
+    min-width: 0;
+    table-layout: auto;
+    font-size: 12.5px;
+    box-shadow: none;
     border-radius: 0;
     margin: 6px 0 14px;
   }
 
-  /* Плотнее ячейки, чтобы больше помещалось */
+  .table-wrap { overflow: visible !important; } /* чтобы ничего не обрезало */
+
   .report th,
   .report td {
     padding: 8px 10px;
     border-color: #d1c7bb;
+    vertical-align: top;
   }
 
-  /* Управление шириной колонок (подгони под себя) */
-  .report .col-date  {width: 90px; 
-                      min-width: 70px;
-                      max-width: 200px;}
-  .report .col-day   {width: 90px;
-                      min-width: 70px;
-                      max-width: 200px;}
-  .report .col-time  {width: 120px;
-                      min-width: 100px;
-                      max-width: 200px;
-                      white-space: normal;
-                      word-break: break-word;
-                      text-align: left;}
+  /* Контроль ширины колонок */
+  .report .col-date  { width: 90px;  min-width: 70px;  max-width: 200px; }
+  .report .col-day   { width: 90px;  min-width: 70px;  max-width: 200px; }
+  .report .col-time  { width: 120px; min-width: 100px; max-width: 200px;
+                       white-space: normal; word-break: break-word; text-align: left; }
   .report .col-hours { width: 90px;  text-align: right; }
-  .report .col-min   { width: 130px;  text-align: right; }
+  .report .col-min   { width: 130px; text-align: right; }
 
-  /* Не разрывать строку с итогами */
+  /* Не рвать блок «итоги» */
   .report tfoot tr,
-  .report tfoot td {
-    page-break-inside: avoid;
-  }
+  .report tfoot td { page-break-inside: avoid; }
 }
+
